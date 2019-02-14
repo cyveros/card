@@ -21,18 +21,35 @@ public class PBSCHCEManagerModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void addUniqueToken(String uniqueToken, Promise promise) {
-        tokenStorage.set(uniqueToken);
+        tokenStorage.set("token", uniqueToken);
 
         promise.resolve(uniqueToken);
     }
 
     @ReactMethod
     public void removeUniqueToken(Promise promise) {
-        promise.resolve(tokenStorage.clear());
+        promise.resolve(tokenStorage.clear("token"));
     }
 
     @ReactMethod
     public void getStoredUniqueToken(Promise promise) {
-        promise.resolve(tokenStorage.get());
+        promise.resolve(tokenStorage.get("token"));
+    }
+
+    @ReactMethod
+    public void addApduCmd(String uniqueToken, Promise promise) {
+        tokenStorage.set("cmd", uniqueToken);
+
+        promise.resolve(uniqueToken);
+    }
+
+    @ReactMethod
+    public void removeApduCmd(Promise promise) {
+        promise.resolve(tokenStorage.clear("cmd"));
+    }
+
+    @ReactMethod
+    public void getApduCmd(Promise promise) {
+        promise.resolve(tokenStorage.get("cmd"));
     }
 }

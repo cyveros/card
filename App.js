@@ -21,7 +21,14 @@ const { PBSCHCEManager } = NativeModules;
 
 export default class App extends Component {
   state = {
-    token: null
+    token: null,
+    cmd: null
+  }
+
+  constructor(props) {
+    super(props);
+
+    this.timeHandler = setInterval(this.onTime, 4000);
   }
 
   async componentDidMount() {
@@ -29,6 +36,10 @@ export default class App extends Component {
 
     this.setState({ token });
     console.log('existed token is:', token);
+  }
+
+  componentWillUnmount() {
+    this.stopTime();
   }
 
   overwriteToken = async () => {
@@ -39,8 +50,20 @@ export default class App extends Component {
     console.log('current token is:', await PBSCHCEManager.getStoredUniqueToken());
   }
 
+  onTime = async () => {
+    let cmd = await PBSCHCEManager.getApduCmd();
+
+    this.setState({ cmd });
+
+    console.log('apdu cmd is:', cmd);
+  }
+
+  stopTime = () => {
+    clearInterval(this.timeHandler);
+  }
+
   render() {
-    const {token} = this.state;
+    const { token, cmd } = this.state;
 
     return (
       <View style={styles.container}>
@@ -48,9 +71,14 @@ export default class App extends Component {
         <Text style={styles.instructions}>To get started, edit App.js</Text>
         <Text style={styles.instructions}>{instructions}</Text>
         <Text>token is: {token ? token : 'default'}</Text>
+        <Text>cmd is: {cmd ? cmd : 'default'}</Text>
         <Button
           title={'Change user token'}
           onPress={this.overwriteToken}
+        />
+        <Button
+          title={'stop tracking apdu cmd'}
+          onPress={this.stopTime}
         />
       </View>
     );

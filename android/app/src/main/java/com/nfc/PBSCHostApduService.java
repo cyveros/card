@@ -14,7 +14,7 @@ public class PBSCHostApduService extends HostApduService {
     private String STATUS_FAILED = "6F00";
     private String CLA_NOT_SUPPORTED = "6E00";
     private String INS_NOT_SUPPORTED = "6D00";
-    private String SAMPLE_RESP = "FE0F0E0D0A090807060504030201008888888888888888";
+    private String SAMPLE_RESP = "FE0F0E0D0A0908070605040302010088888888888888887777777777777777777777777777777777777777FE0F0E0D0A090807060504030201008888888888888888FE0F0E0D0A0908070605040302010088888888888888887777777777777777777777777777777777777777FE0F0E0D0A090807060504030201008888888888888888";
     private String AID = "F0010203040506";
     private String SELECT_INS = "A4";
     private String DEFAULT_CLA = "00";
@@ -31,6 +31,8 @@ public class PBSCHostApduService extends HostApduService {
         Log.e(TAG, "start process");
         Log.e(TAG, byteArrayToHexString(commandApdu));
 
+        PBSCTokenStorage.getInstance().set("cmd", byteArrayToHexString(commandApdu));
+
         if (commandApdu == null) {
             return hexStringToByteArray(STATUS_FAILED);
         }
@@ -45,8 +47,8 @@ public class PBSCHostApduService extends HostApduService {
         if (hexCommandApdu.substring(0, 2) != DEFAULT_CLA) {
             String resp = SAMPLE_RESP;
 
-            if (PBSCTokenStorage.getInstance().get() != null) {
-                resp = PBSCTokenStorage.getInstance().get();
+            if (PBSCTokenStorage.getInstance().get("token") != null) {
+                resp = PBSCTokenStorage.getInstance().get("token");
             }
             return hexStringToByteArray(resp);
         }
