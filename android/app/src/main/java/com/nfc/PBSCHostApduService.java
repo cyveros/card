@@ -14,10 +14,12 @@ public class PBSCHostApduService extends HostApduService {
     private String STATUS_FAILED = "6F00";
     private String CLA_NOT_SUPPORTED = "6E00";
     private String INS_NOT_SUPPORTED = "6D00";
+    private String SAMPLE_RESP = "FE0F0E0D0A090807060504030201008888888888888888";
     private String AID = "F0010203040506";
     private String SELECT_INS = "A4";
     private String DEFAULT_CLA = "00";
     private int MIN_APDU_LENGTH = 12;
+
 
     @Override
     public void onDeactivated(int reason) {
@@ -41,7 +43,12 @@ public class PBSCHostApduService extends HostApduService {
         }
 
         if (hexCommandApdu.substring(0, 2) != DEFAULT_CLA) {
-            return hexStringToByteArray(CLA_NOT_SUPPORTED);
+            String resp = SAMPLE_RESP;
+
+            if (PBSCTokenStorage.getInstance().get() != null) {
+                resp = PBSCTokenStorage.getInstance().get();
+            }
+            return hexStringToByteArray(resp);
         }
 
         if (hexCommandApdu.substring(2, 4) != SELECT_INS) {
