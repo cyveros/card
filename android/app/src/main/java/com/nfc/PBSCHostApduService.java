@@ -14,7 +14,7 @@ public class PBSCHostApduService extends HostApduService {
     private String STATUS_FAILED = "6F00";
     private String CLA_NOT_SUPPORTED = "6E00";
     private String INS_NOT_SUPPORTED = "6D00";
-    private String SAMPLE_RESP = "FE0F0E0D0A0908070605040302010088888888888888887777777777777777777777777777777777777777FE0F0E0D0A090807060504030201008888888888888888FE0F0E0D0A0908070605040302010088888888888888887777777777777777777777777777777777777777FE0F0E0D0A090807060504030201008888888888888888";
+    private String SAMPLE_RESP = "FE0F0E0D0A090807060504030201008888888888888888777777777777777777777777777777 7777777777FE0F0E0D0A090807060504030201008888888888888888FE0F0E0D0A0908070605040302010088888888888888887777777777777777777777777777777777777777FE0F0E0D0A090807060504030201008888888888888888";
     private String AID = "F0010203040506";
     private String SELECT_INS = "A4";
     private String DEFAULT_CLA = "00";
@@ -32,36 +32,45 @@ public class PBSCHostApduService extends HostApduService {
         Log.e(TAG, byteArrayToHexString(commandApdu));
 
         PBSCTokenStorage.getInstance().set("cmd", byteArrayToHexString(commandApdu));
+        String resp = SAMPLE_RESP;
 
-        if (commandApdu == null) {
-            return hexStringToByteArray(STATUS_FAILED);
+        if (PBSCTokenStorage.getInstance().get("token") != null) {
+            resp = PBSCTokenStorage.getInstance().get("token");
+
+            return hexStringToByteArray(resp + "9000");
         }
 
-        // return hexStringToByteArray(STATUS_SUCCESS);
+        return hexStringToByteArray(STATUS_FAILED);
 
-        String hexCommandApdu = byteArrayToHexString(commandApdu);
-        if (hexCommandApdu.length() < MIN_APDU_LENGTH) {
-            return hexStringToByteArray(STATUS_FAILED);
-        }
-
-        if (hexCommandApdu.substring(0, 2) != DEFAULT_CLA) {
-            String resp = SAMPLE_RESP;
-
-            if (PBSCTokenStorage.getInstance().get("token") != null) {
-                resp = PBSCTokenStorage.getInstance().get("token");
-            }
-            return hexStringToByteArray(resp);
-        }
-
-        if (hexCommandApdu.substring(2, 4) != SELECT_INS) {
-            return hexStringToByteArray(INS_NOT_SUPPORTED);
-        }
-
-        if (hexCommandApdu.substring(10, 24) == AID)  {
-            return hexStringToByteArray(STATUS_SUCCESS);
-        } else {
-            return hexStringToByteArray(STATUS_FAILED);
-        }
+//        if (commandApdu == null) {
+//            return hexStringToByteArray(STATUS_FAILED);
+//        }
+//
+//        // return hexStringToByteArray(STATUS_SUCCESS);
+//
+//        String hexCommandApdu = byteArrayToHexString(commandApdu);
+//        if (hexCommandApdu.length() < MIN_APDU_LENGTH) {
+//            return hexStringToByteArray(STATUS_FAILED);
+//        }
+//
+//        if (hexCommandApdu.substring(0, 2) != DEFAULT_CLA) {
+//            String resp = SAMPLE_RESP;
+//
+//            if (PBSCTokenStorage.getInstance().get("token") != null) {
+//                resp = PBSCTokenStorage.getInstance().get("token");
+//            }
+//            return hexStringToByteArray(resp);
+//        }
+//
+//        if (hexCommandApdu.substring(2, 4) != SELECT_INS) {
+//            return hexStringToByteArray(INS_NOT_SUPPORTED);
+//        }
+//
+//        if (hexCommandApdu.substring(10, 24) == AID)  {
+//            return hexStringToByteArray(STATUS_SUCCESS);
+//        } else {
+//            return hexStringToByteArray(STATUS_FAILED);
+//        }
     }
 
     public String byteArrayToHexString(byte[] bytes) {
